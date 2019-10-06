@@ -5,11 +5,15 @@ import { GridCell, StateNode, SearchState } from "./models";
  *
  * @param totalRows The total number of rows in the grid
  * @param totalCols The total number of columns in the grid
- * @param source The source grid cell
- * @param destination The destination grid cell
- * @param blockedCells The array of grid cells that are blocked i.e. cannot be visited
+ * @param source The source GridCell
+ * @param destination The destination GridCell
+ * @param blockedCells The array of GridCells that are blocked i.e. cannot be visited
+ * @param horizontalCost Cost of a horizontal move
+ * @param verticalCost Cost of a vertical move
  *
- * @returns shortest path: The array of grid cells representing the shortest path from source to destination
+ * N.B: a GridCell is of type: { rowNumber: number, colNumber: number }
+ * 
+ * @returns shortest path: The array of GridCells representing the shortest path (if it exists) from source to destination 
  */
 export function AStarGridSearch(
   totalRows: number,
@@ -54,6 +58,6 @@ export function AStarGridSearch(
     // TODO: implement a state.hasUnexploredNeighbours instead of while(true)
   } while (true);
 
-  // TODO: return if destinationNode was explored
+  // TODO: return path if destinationNode was explored
   return searchState.getShortestPathTo(destinationNode);
 }
