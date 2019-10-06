@@ -1,3 +1,5 @@
+import { Heuristic_ManhattanDistance } from "./heuristics";
+
 export type GridCell = {
   rowNumber: number;
   colNumber: number;
@@ -31,15 +33,17 @@ export class StateNode {
  */
 export class SearchState {
   private state: StateNode[] = [];
+  private heuristic = Heuristic_ManhattanDistance;
 
   constructor(
-    source: StateNode,
+    private source: StateNode,
     private totalRows: number,
     private totalCols: number,
-    private blockedCells: GridCell[]
+    private blockedCells: GridCell[],
+    private horizontalCost: number,
+    private verticalCost: number
   ) {
     if (!source.visited) {
-      // ensure source is visited
       source.visited = true;
     }
     this.addNode(source);
@@ -49,7 +53,9 @@ export class SearchState {
     this.state.push(node);
   }
 
-  updateFrontiersFrom(node: StateNode) {}
+  updateFrontiersFrom(node: StateNode) {
+    throw new Error("Method not implemented.");
+  }
 
   findMinCostFrontier(): StateNode {
     throw new Error("Method not implemented.");
@@ -59,10 +65,7 @@ export class SearchState {
     throw new Error("Method not implemented.");
   }
 
-  getShortestPath(
-    sourceNode: StateNode,
-    destinationNode: StateNode
-  ): GridCell[] {
+  getShortestPathTo(destinationNode: StateNode): GridCell[] {
     throw new Error("Method not implemented.");
   }
 }
