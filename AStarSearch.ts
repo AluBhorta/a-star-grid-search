@@ -8,12 +8,12 @@ import { GridCell, StateNode, SearchState } from "./models";
  * @param source The source GridCell
  * @param destination The destination GridCell
  * @param blockedCells The array of GridCells that are blocked i.e. cannot be visited
- * @param horizontalCost Cost of a horizontal move
- * @param verticalCost Cost of a vertical move
+ * @param rowStepCost Cost of each step across rows
+ * @param colStepCost Cost of each step across columns
  *
  * N.B: a GridCell is of type: { rowNumber: number, colNumber: number }
- * 
- * @returns shortest path: The array of GridCells representing the shortest path (if it exists) from source to destination 
+ *
+ * @returns shortest path: The array of GridCells representing the shortest path (if it exists) from source to destination
  */
 export function AStarGridSearch(
   totalRows: number,
@@ -21,10 +21,10 @@ export function AStarGridSearch(
   source: GridCell,
   destination: GridCell,
   blockedCells: GridCell[] = [],
-  horizontalCost: number = 1,
-  verticalCost: number = 1
+  rowStepCost: number = 1,
+  colStepCost: number = 1
 ): GridCell[] {
-  // TODO: return error if src and dest in blockedCells
+  // TODO: return error if src or dest in blockedCells
 
   // init currentNode as src, and set visited as true
   const sourceNode = new StateNode(source, null, false, true);
@@ -33,31 +33,38 @@ export function AStarGridSearch(
   // init new search state with sourceNode
   const searchState = new SearchState(
     sourceNode,
+    destinationNode,
     totalRows,
     totalCols,
     blockedCells,
-    horizontalCost,
-    verticalCost
+    rowStepCost,
+    colStepCost
   );
 
   let currentNode: StateNode = sourceNode;
   let minCostNode: StateNode;
+
+  let shortestPathExists: boolean = false;
   do {
     searchState.updateFrontiersFrom(currentNode);
 
     minCostNode = searchState.findMinCostFrontier();
-    // TODO: find point of best yield
-    if (minCostNode.matches(destinationNode)) {
-      break;
-    }
 
     searchState.explore(minCostNode);
 
+    // TODO: find point of best yield
+    if (minCostNode.matches(destinationNode)) {
+      shortestPathExists = true;
+      break;
+    }
+
     currentNode = minCostNode;
 
-    // TODO: implement a state.hasUnexploredNeighbours instead of while(true)
-  } while (true);
+    // } while (true);
+  } while (searchState.hasUnexploredFrontiers());
 
-  // TODO: return path if destinationNode was explored
-  return searchState.getShortestPathTo(destinationNode);
+  if (shortestPathExists) {
+    return searchState.getShortestPath();
+  }
+  return null;
 }
