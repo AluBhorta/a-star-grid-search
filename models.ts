@@ -56,33 +56,6 @@ export class SearchState {
     this.stateNodes.push(node);
   }
 
-  public updateFrontiersFrom(node: StateNode) {
-    // valid neighbours are not blocked or outside the specified grid
-    const neighbourCells: GridCell[] = this.getValidNeighbourCellsOf(node);
-
-    for (const cell of neighbourCells) {
-      const cellIndex = this.getStateIndexOf(cell);
-
-      if (cellIndex === -1) {
-        // if cell does not exist in state
-        const newNode: StateNode = this.constructNewNode(cell, node);
-
-        this.addNodeToState(newNode);
-      } else {
-        // if cell is already in state
-        const visited = this.stateNodes[cellIndex].visited;
-
-        if (!visited) {
-          const newNode: StateNode = this.constructNewNode(cell, node);
-
-          if (newNode.F_value < this.stateNodes[cellIndex].F_value) {
-            this.stateNodes[cellIndex] = newNode;
-          }
-        }
-      }
-    }
-  }
-
   private constructNewNode(cell: GridCell, parentNode: StateNode): StateNode {
     const newNode = new StateNode(cell, parentNode);
 
@@ -158,6 +131,33 @@ export class SearchState {
     );
   }
 
+  public updateFrontiersFrom(node: StateNode) {
+    // valid neighbours are not blocked or outside the specified grid
+    const neighbourCells: GridCell[] = this.getValidNeighbourCellsOf(node);
+
+    for (const cell of neighbourCells) {
+      const cellIndex = this.getStateIndexOf(cell);
+
+      if (cellIndex === -1) {
+        // if cell does not exist in state
+        const newNode: StateNode = this.constructNewNode(cell, node);
+
+        this.addNodeToState(newNode);
+      } else {
+        // if cell is already in state
+        const visited = this.stateNodes[cellIndex].visited;
+
+        if (!visited) {
+          const newNode: StateNode = this.constructNewNode(cell, node);
+
+          if (newNode.F_value < this.stateNodes[cellIndex].F_value) {
+            this.stateNodes[cellIndex] = newNode;
+          }
+        }
+      }
+    }
+  }
+
   public findMinCostFrontier(): StateNode {
     let minCostNode: StateNode = null;
 
@@ -173,16 +173,37 @@ export class SearchState {
     return minCostNode;
   }
 
-  public explore(minCostNode: StateNode) {
-    throw new Error("Method not implemented.");
-  }
-
-  public hasUnexploredFrontiers(): boolean {
-    throw new Error("Method not implemented.");
+  public explore(node: StateNode) {
+    node.visited = true;
   }
 
   public getShortestPath(): GridCell[] {
-    throw new Error("Method not implemented.");
-    // should return the path, path-length if path exists, error/warning otherwise
+    let destinationNodeIndexInState = -1;
+    for (let index = 0; index < this.stateNodes.length; index++) {
+      if (
+        this.cellsMatch(this.stateNodes[index].cell, this.destinationNode.cell)
+      ) {
+        destinationNodeIndexInState = index;
+        break;
+      }
+    }
+
+    if (
+      destinationNodeIndexInState === -1 ||
+      !this.stateNodes[destinationNodeIndexInState].visited
+    ) {
+      return null;
+    }
+
+    const pathCells: GridCell[] = [];
+    let currentNode: StateNode = this.stateNodes[destinationNodeIndexInState];
+
+    while (currentNode.parent !== null) {
+      pathCells.push(currentNode.cell);
+      currentNode = currentNode.parent;
+    }
+    pathCells.push(this.sourceNode.cell);
+
+    return pathCells.reverse();
   }
 }

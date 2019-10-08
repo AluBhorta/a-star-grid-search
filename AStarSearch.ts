@@ -5,8 +5,8 @@ import { GridCell, StateNode, SearchState } from "./models";
  *
  * @param totalRows The total number of rows in the grid
  * @param totalCols The total number of columns in the grid
- * @param source The source GridCell
- * @param destination The destination GridCell
+ * @param sourceCell The source GridCell
+ * @param destinationCell The destination GridCell
  * @param blockedCells The array of GridCells that are blocked i.e. cannot be visited
  * @param rowStepCost Cost of each step across rows
  * @param colStepCost Cost of each step across columns
@@ -18,8 +18,8 @@ import { GridCell, StateNode, SearchState } from "./models";
 export function AStarGridSearch(
   totalRows: number,
   totalCols: number,
-  source: GridCell,
-  destination: GridCell,
+  sourceCell: GridCell,
+  destinationCell: GridCell,
   blockedCells: GridCell[] = [],
   rowStepCost: number = 1,
   colStepCost: number = 1
@@ -27,8 +27,8 @@ export function AStarGridSearch(
   // TODO: return error if src or dest in blockedCells
 
   // init currentNode as src, and set visited as true
-  const sourceNode = new StateNode(source, null, false, true, 0);
-  const destinationNode = new StateNode(destination, null, false);
+  const sourceNode = new StateNode(sourceCell, null, false, true, 0);
+  const destinationNode = new StateNode(destinationCell, null, false);
 
   // init new search state with sourceNode
   const searchState = new SearchState(
@@ -45,7 +45,8 @@ export function AStarGridSearch(
   let minCostNode: StateNode;
 
   let shortestPathExists: boolean = false;
-  do {
+
+  while (true) {
     searchState.updateFrontiersFrom(currentNode);
 
     minCostNode = searchState.findMinCostFrontier();
@@ -64,12 +65,10 @@ export function AStarGridSearch(
     }
 
     currentNode = minCostNode;
-
-    // } while (true);
-  } while (searchState.hasUnexploredFrontiers());
+  }
 
   if (shortestPathExists) {
     return searchState.getShortestPath();
   }
-  return null;    // signifies that no path exists
+  return null; // signifies that no path exists
 }
