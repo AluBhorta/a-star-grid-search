@@ -34,10 +34,10 @@ export class StateNode {
  * TODO: Describe what a SearchState means
  */
 export class SearchState {
-  private state: StateNode[] = [];
+  private stateNodes: StateNode[] = [];
   private heuristic = Heuristic_ManhattanDistance;
 
-  constructor(
+  public constructor(
     private sourceNode: StateNode,
     private destinationNode: StateNode,
     private totalRows: number,
@@ -53,10 +53,11 @@ export class SearchState {
   }
 
   private addNodeToState(node: StateNode) {
-    this.state.push(node);
+    this.stateNodes.push(node);
   }
 
-  updateFrontiersFrom(node: StateNode) {
+  public updateFrontiersFrom(node: StateNode) {
+    // valid neighbours are not blocked or outside the specified grid
     const neighbourCells: GridCell[] = this.getValidNeighbourCellsOf(node);
 
     for (const cell of neighbourCells) {
@@ -69,13 +70,13 @@ export class SearchState {
         this.addNodeToState(newNode);
       } else {
         // if cell is already in state
-        const visited = this.state[cellIndex].visited;
+        const visited = this.stateNodes[cellIndex].visited;
 
         if (!visited) {
           const newNode: StateNode = this.constructNewNode(cell, node);
 
-          if (newNode.F_value < this.state[cellIndex].F_value) {
-            this.state[cellIndex] = newNode;
+          if (newNode.F_value < this.stateNodes[cellIndex].F_value) {
+            this.stateNodes[cellIndex] = newNode;
           }
         }
       }
@@ -141,8 +142,8 @@ export class SearchState {
   }
 
   private getStateIndexOf(cell: GridCell): number {
-    for (let index = 0; index < this.state.length; index++) {
-      if (this.cellsMatch(cell, this.state[index].cell)) {
+    for (let index = 0; index < this.stateNodes.length; index++) {
+      if (this.cellsMatch(cell, this.stateNodes[index].cell)) {
         return index;
       }
     }
@@ -157,19 +158,30 @@ export class SearchState {
     );
   }
 
-  findMinCostFrontier(): StateNode {
+  public findMinCostFrontier(): StateNode {
+    let minCostNode: StateNode = null;
+
+    // all nodes in state are automatically non-blocked and have a valid cell as these checks are performed prior to adding nodes to the state
+    for (const node of this.stateNodes) {
+      if (!node.visited) {
+        if (minCostNode === null || node.F_value < minCostNode.F_value) {
+          minCostNode = node;
+        }
+      }
+    }
+
+    return minCostNode;
+  }
+
+  public explore(minCostNode: StateNode) {
     throw new Error("Method not implemented.");
   }
 
-  explore(minCostNode: StateNode) {
+  public hasUnexploredFrontiers(): boolean {
     throw new Error("Method not implemented.");
   }
 
-  hasUnexploredFrontiers(): boolean {
-    throw new Error("Method not implemented.");
-  }
-
-  getShortestPath(): GridCell[] {
+  public getShortestPath(): GridCell[] {
     throw new Error("Method not implemented.");
     // should return the path, path-length if path exists, error/warning otherwise
   }

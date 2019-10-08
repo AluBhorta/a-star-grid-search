@@ -27,7 +27,7 @@ export function AStarGridSearch(
   // TODO: return error if src or dest in blockedCells
 
   // init currentNode as src, and set visited as true
-  const sourceNode = new StateNode(source, null, false, true);
+  const sourceNode = new StateNode(source, null, false, true, 0);
   const destinationNode = new StateNode(destination, null, false);
 
   // init new search state with sourceNode
@@ -50,6 +50,11 @@ export function AStarGridSearch(
 
     minCostNode = searchState.findMinCostFrontier();
 
+    if (minCostNode === null) {
+      // signifies no unvisited nodes in state
+      break;
+    }
+
     searchState.explore(minCostNode);
 
     // TODO: find point of best yield
@@ -66,5 +71,5 @@ export function AStarGridSearch(
   if (shortestPathExists) {
     return searchState.getShortestPath();
   }
-  return null;
+  return null;    // signifies that no path exists
 }
