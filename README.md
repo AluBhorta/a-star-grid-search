@@ -25,4 +25,4 @@ Run locally after cloning this repo. You must have **Typescript** & **Nodejs** i
 
 ## License
 
-GNU
+MIT
