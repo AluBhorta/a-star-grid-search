@@ -13,7 +13,7 @@ export type GridCell = {
 export class StateNode {
   constructor(
     public cell: GridCell,
-    public parent: StateNode,
+    public parent: StateNode | null,
     public blocked: boolean = false,
     public visited: boolean = false,
     public C_value: number = -1,
@@ -158,8 +158,8 @@ export class SearchState {
     }
   }
 
-  public findMinCostFrontier(): StateNode {
-    let minCostNode: StateNode = null;
+  public findMinCostFrontier(): StateNode | null {
+    let minCostNode: StateNode | null = null;
 
     // all nodes in state are automatically non-blocked and have a valid cell as these checks are performed prior to adding nodes to the state
     for (const node of this.stateNodes) {
@@ -177,7 +177,7 @@ export class SearchState {
     node.visited = true;
   }
 
-  public getShortestPath(): GridCell[] {
+  public getShortestPath(): GridCell[] | null {
     let destinationNodeIndexInState = -1;
     for (let index = 0; index < this.stateNodes.length; index++) {
       if (

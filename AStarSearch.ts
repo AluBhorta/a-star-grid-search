@@ -23,7 +23,7 @@ export function AStarGridSearch(
   blockedCells: GridCell[] = [],
   rowStepCost: number = 1,
   colStepCost: number = 1
-): GridCell[] {
+): GridCell[] | null {
   // TODO: return error if src or dest in blockedCells
 
   // init currentNode as src, and set visited as true
@@ -41,8 +41,8 @@ export function AStarGridSearch(
     colStepCost
   );
 
-  let currentNode: StateNode = sourceNode;
-  let minCostNode: StateNode;
+  let currentNode: StateNode | null = sourceNode;
+  let minCostNode: StateNode | null;
 
   let shortestPathExists: boolean = false;
 
